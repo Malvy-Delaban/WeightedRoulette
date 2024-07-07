@@ -1,144 +1,226 @@
 <!DOCTYPE HTML>
 <html>
 
+<head>
+    <style>
+body {
+    background-color: #121212; /* Dark background */
+    color: #f0f0f0; /* Light text for contrast */
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+}
+
+h2 {
+    color: #ff6f61; /* Highlight color for headings */
+    margin-bottom: 10px;
+}
+
+p {
+    color: #b0b0b0; /* Slightly muted text for description */
+}
+
+button {
+    background-color: #ff6f61; /* Primary button color */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #ff4b3e; /* Darker shade on hover */
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.singleprop {
+    border-radius: 5px;
+    background-color: #1e1e1e; /* Darker background for input sections */
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.singleprop input[type="text"],
+.singleprop input[type="number"] {
+    background-color: #2a2a2a; /* Darker input background */
+    color: #f0f0f0;
+    border: 1px solid #444; /* Border to make input stand out */
+    border-radius: 3px;
+    padding: 8px;
+    font-size: 16px;
+    flex: 1;
+}
+
+.singleprop input[type="text"]:focus,
+.singleprop input[type="number"]:focus {
+    outline: none;
+    border-color: #ff6f61; /* Highlight border on focus */
+}
+
+.singleprop button {
+    flex-shrink: 0;
+    padding: 8px 12px;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #292929; /* Result background */
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff6f61; /* Highlight color for result text */
+}
+
+.propositionsDisplay {
+    margin-top: 20px;
+}
+
+::placeholder {
+    color: #888; /* Placeholder text color */
+    opacity: 1;
+}
+
+/* Add animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.propositionsDisplay div,
+.result {
+    animation: fadeIn 0.3s ease-in;
+}
+
+    </style>
+</head>
+
 <body>
 
-    <style>
-        .singleprop {
-            border-radius: 5px;
-            background-color: rgb(240, 240, 240);
-            padding: 5px;
-            margin: 5px;
-        }
-    </style>
+    <h2>Weighted Roulette Beta Test</h2>
+    <p>This project is in beta. Please enter propositions and their weights, then roll for a result.</p>
 
-  <script>
-    let propositionList = [
-        {
-            "text" : "",
-            "weight" : 100
-        }
-    ];
+    <div class="propositionsDisplay"></div><br>
 
-    // if used as getRandomInt(3), will return 1, 2 or 3
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * max) + 1;
-    }
-
-    // get Total weight sum
-    function getTotalWeightSum(propositions) {
-        totalWeightedSum = 0;
-        propositions.forEach(proposition => {
-            Math.ceil(proposition.weight);
-            totalWeightedSum += proposition.weight;
-        });
-        return totalWeightedSum;
-    }
-
-    // roll randomizer
-    function rollRandomized(propositions) {
-        let totalWeightedSum = getTotalWeightSum(propositions);
-        let randomizedNumber = getRandomInt(totalWeightedSum);
-        let currentIndex = 0;
-        let resultIndex = -1;
-
-        propositions.forEach(proposition => {
-            if (resultIndex == -1) {
-                if (randomizedNumber <= proposition.weight) {
-                    resultIndex = currentIndex;
-                } else {
-                    randomizedNumber -= proposition.weight;
-                    currentIndex++;
-                }
-            }
-        });
-        return resultIndex;
-    }
-
-    // check proposition list validity
-    function checkValidityList(propositions) {
-        isValid = true;
-
-        if (!propositions || propositions.length <= 0)
-            return false;
-
-        propositionList.forEach(element => {
-            if (!element || !element.text || !element.weight)
-                isValid = false;
-        });
-        return isValid;
-    }
-
-    // user starts roll
-    function startRoll(propositions) {
-        if (checkValidityList(propositions) == false) {
-            alert("Please, use valid inputs");
-            return;
-        }
-        let resultIndex = rollRandomized(propositions);
-        const divRes = document.querySelector('.result');
-        divRes.innerHTML = "<b>Result :</b> " + propositions[resultIndex].text
-    }
-
-
-    // update display of propositions
-    function updateDisplay() {
-        const div = document.querySelector('.propositionsDisplay');
-        div.innerHTML = "";
-
-        propositionList.forEach(function (element, i) {
-            let newPropDisplay = div.appendChild(document.createElement('div'));
-            newPropDisplay.className = "singleprop";
-            newPropDisplay.id = "prop_" + i;
-            newPropDisplay.innerHTML = `
-                <input placeholder="Name" oninput="updateValue()" value ="` + element.text + `">
-                <input placeholder="100" oninput="updateValue()" value="` + element.weight + `">
-                <button onclick="removeElement(` + i + `)"> delete element </button>
-            `;
-        });
-    }
-
-    // remove element
-    function removeElement(index) {
-        propositionList.splice(index, 1);
-        updateDisplay();
-    }
-
-    // update propositionList
-    function updateValue() {
-        propositionList = [];
-        const div = document.querySelector('.propositionsDisplay');
-
-        for (let i = 0; i < div.children.length; i++) {
-            propositionList.push({
-                "text" : div.children[i].children[0].value,
-                "weight" : parseInt(div.children[i].children[1].value),
-            });
-        }
-    }
-
-    // add element to list
-    function addElement() {
-        propositionList.push({
-            "text" : "",
-            "weight" : 100
-        });
-        updateDisplay();
-    }
-  </script>
-    <h2>This is a beta test for a weighted roulette. No UX-UI has been done so far. This project might be deleted later on.</h2>
-    <p>Enter the name of each proposition and its weight (must be a valid integer since no error handling has been done on this project). Then, roll for result.</p><br><br>
-    <div class="propositionsDisplay"></div><br><br>
-
-    <button onclick="addElement()">New element</button><br><br>
+    <button onclick="addElement()">Add New Proposition</button><br><br>
     <button onclick="startRoll(propositionList)">Roll</button><br><br>
 
     <div class="result"></div>
 
     <script>
+        let propositionList = [{
+            "text": "",
+            "weight": 100
+        }];
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max) + 1;
+        }
+
+        function getTotalWeightSum(propositions) {
+            let totalWeightedSum = 0;
+            propositions.forEach(proposition => {
+                totalWeightedSum += proposition.weight;
+            });
+            return totalWeightedSum;
+        }
+
+        function rollRandomized(propositions) {
+            let totalWeightedSum = getTotalWeightSum(propositions);
+            let randomizedNumber = getRandomInt(totalWeightedSum);
+            let currentIndex = 0;
+            let resultIndex = -1;
+
+            propositions.forEach((proposition, index) => {
+                if (resultIndex == -1) {
+                    if (randomizedNumber <= proposition.weight) {
+                        resultIndex = index;
+                    } else {
+                        randomizedNumber -= proposition.weight;
+                    }
+                }
+            });
+
+            return resultIndex;
+        }
+
+        function checkValidityList(propositions) {
+            let isValid = true;
+
+            if (!propositions || propositions.length <= 0)
+                return false;
+
+            propositionList.forEach(element => {
+                if (!element || !element.text || !element.weight)
+                    isValid = false;
+            });
+            return isValid;
+        }
+
+        function startRoll(propositions) {
+            if (!checkValidityList(propositions)) {
+                alert("Please enter valid inputs.");
+                return;
+            }
+            let resultIndex = rollRandomized(propositions);
+            const divRes = document.querySelector('.result');
+            divRes.innerHTML = "<b>Result :</b> " + propositions[resultIndex].text;
+        }
+
+        function updateDisplay() {
+            const div = document.querySelector('.propositionsDisplay');
+            div.innerHTML = "";
+
+            propositionList.forEach(function (element, i) {
+                let newPropDisplay = div.appendChild(document.createElement('div'));
+                newPropDisplay.className = "singleprop";
+                newPropDisplay.id = "prop_" + i;
+                newPropDisplay.innerHTML = `
+                    <input type="text" placeholder="Name" oninput="updateValue()" value="${element.text}">
+                    <input type="number" placeholder="100" oninput="updateValue()" value="${element.weight}">
+                    <button onclick="removeElement(${i})">Delete</button>
+                `;
+            });
+        }
+
+        function removeElement(index) {
+            propositionList.splice(index, 1);
+            updateDisplay();
+        }
+
+        function updateValue() {
+            propositionList = [];
+            const div = document.querySelector('.propositionsDisplay');
+
+            for (let i = 0; i < div.children.length; i++) {
+                propositionList.push({
+                    "text": div.children[i].querySelector('input[type="text"]').value,
+                    "weight": parseInt(div.children[i].querySelector('input[type="number"]').value),
+                });
+            }
+        }
+
+        function addElement() {
+            propositionList.push({
+                "text": "",
+                "weight": 100
+            });
+            updateDisplay();
+        }
+
         updateDisplay();
     </script>
-
 
 </body>
 
